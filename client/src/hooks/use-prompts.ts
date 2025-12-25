@@ -54,6 +54,23 @@ export function useCreatePrompt() {
   });
 }
 
+export function useDeletePrompt() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: number) => {
+      const url = buildUrl(api.prompts.delete.path, { id });
+      const res = await fetch(url, {
+        method: api.prompts.delete.method,
+        credentials: "include",
+      });
+      if (!res.ok) throw new Error("Failed to delete prompt");
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [api.prompts.list.path] });
+    },
+  });
+}
+
 export function useRunPrompt(id: number) {
   return useMutation({
     mutationFn: async () => {

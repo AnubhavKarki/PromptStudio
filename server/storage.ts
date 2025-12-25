@@ -11,6 +11,7 @@ export interface IStorage {
   getPrompts(): Promise<Prompt[]>;
   getPrompt(id: number): Promise<Prompt | undefined>;
   createPrompt(prompt: InsertPrompt): Promise<Prompt>;
+  deletePrompt(id: number): Promise<void>;
   
   getTestCases(promptId: number): Promise<TestCase[]>;
   createTestCase(testCase: InsertTestCase): Promise<TestCase>;
@@ -32,6 +33,12 @@ export class DatabaseStorage implements IStorage {
   async createPrompt(insertPrompt: InsertPrompt): Promise<Prompt> {
     const [prompt] = await db.insert(prompts).values(insertPrompt).returning();
     return prompt;
+  }
+
+  async deletePrompt(id: number): Promise<void> {
+    await db.delete(runs).where(eq(runs.promptId, id));
+    await db.delete(testCases).where(eq(testCases.promptId, id));
+    await db.delete(prompts).where(eq(prompts.id, id));
   }
 
   async getTestCases(promptId: number): Promise<TestCase[]> {

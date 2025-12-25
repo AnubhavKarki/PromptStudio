@@ -45,6 +45,16 @@ export async function registerRoutes(
     res.json(prompt);
   });
 
+  app.delete(api.prompts.delete.path, async (req, res) => {
+    const id = Number(req.params.id);
+    const prompt = await storage.getPrompt(id);
+    if (!prompt) {
+      return res.status(404).json({ message: 'Prompt not found' });
+    }
+    await storage.deletePrompt(id);
+    res.status(204).end();
+  });
+
   // Test Cases
   app.post(api.testCases.create.path, async (req, res) => {
     try {
