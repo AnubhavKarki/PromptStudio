@@ -76,7 +76,7 @@ export function CreatePromptDialog() {
               Prompt Template
             </Label>
             <p className="text-sm text-muted-foreground">
-              Use <span className="text-primary font-mono bg-primary/10 px-1 rounded">{{variable}}</span> syntax for dynamic inputs.
+              Use <span className="text-primary font-mono bg-primary/10 px-1 rounded">{"{{variable}}"}</span> syntax for dynamic inputs.
             </p>
             <Textarea
               id="content"
