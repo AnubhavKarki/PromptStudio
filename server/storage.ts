@@ -1,38 +1,58 @@
-import { type User, type InsertUser } from "@shared/schema";
-import { randomUUID } from "crypto";
-
-// modify the interface with any CRUD methods
-// you might need
+import { db } from "./db";
+import {
+  prompts, testCases, runs,
+  type Prompt, type InsertPrompt,
+  type TestCase, type InsertTestCase,
+  type Run, type InsertRun
+} from "@shared/schema";
+import { eq, desc } from "drizzle-orm";
 
 export interface IStorage {
-  getUser(id: string): Promise<User | undefined>;
-  getUserByUsername(username: string): Promise<User | undefined>;
-  createUser(user: InsertUser): Promise<User>;
+  getPrompts(): Promise<Prompt[]>;
+  getPrompt(id: number): Promise<Prompt | undefined>;
+  createPrompt(prompt: InsertPrompt): Promise<Prompt>;
+  
+  getTestCases(promptId: number): Promise<TestCase[]>;
+  createTestCase(testCase: InsertTestCase): Promise<TestCase>;
+  
+  getRuns(promptId: number): Promise<Run[]>;
+  createRun(run: InsertRun): Promise<Run>;
 }
 
-export class MemStorage implements IStorage {
-  private users: Map<string, User>;
-
-  constructor() {
-    this.users = new Map();
+export class DatabaseStorage implements IStorage {
+  async getPrompts(): Promise<Prompt[]> {
+    return await db.select().from(prompts).orderBy(desc(prompts.createdAt));
   }
 
-  async getUser(id: string): Promise<User | undefined> {
-    return this.users.get(id);
+  async getPrompt(id: number): Promise<Prompt | undefined> {
+    const [prompt] = await db.select().from(prompts).where(eq(prompts.id, id));
+    return prompt;
   }
 
-  async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(
-      (user) => user.username === username,
-    );
+  async createPrompt(insertPrompt: InsertPrompt): Promise<Prompt> {
+    const [prompt] = await db.insert(prompts).values(insertPrompt).returning();
+    return prompt;
   }
 
-  async createUser(insertUser: InsertUser): Promise<User> {
-    const id = randomUUID();
-    const user: User = { ...insertUser, id };
-    this.users.set(id, user);
-    return user;
+  async getTestCases(promptId: number): Promise<TestCase[]> {
+    return await db.select().from(testCases).where(eq(testCases.promptId, promptId));
+  }
+
+  async createTestCase(insertTestCase: InsertTestCase): Promise<TestCase> {
+    const [testCase] = await db.insert(testCases).values(insertTestCase).returning();
+    return testCase;
+  }
+
+  async getRuns(promptId: number): Promise<Run[]> {
+    return await db.select().from(runs)
+      .where(eq(runs.promptId, promptId))
+      .orderBy(desc(runs.createdAt));
+  }
+
+  async createRun(insertRun: InsertRun): Promise<Run> {
+    const [run] = await db.insert(runs).values(insertRun).returning();
+    return run;
   }
 }
 
-export const storage = new MemStorage();
+export const storage = new DatabaseStorage();
