@@ -21,6 +21,9 @@ PromptStudio is a full-stack application for testing and evaluating LLM prompts,
 | Tailwind CSS | | | |
 | TanStack Query | | | |
 
+## Demo
+![PromptStudio Demo](demo.png)
+
 ## Getting Started
 
 ### Prerequisites
