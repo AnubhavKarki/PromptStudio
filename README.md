@@ -12,6 +12,13 @@ PromptStudio is a full-stack application for testing and evaluating LLM prompts,
 - Automated Evaluation: Run tests against OpenAI GPT-4o and verify results.
 - Run History: Track past execution results and success rates.
 
+## Tech Stack
+
+| Frontend | Backend | Database | AI |
+|----------|---------|----------|----|
+| React | Express | PostgreSQL | OpenAI GPT-4o |
+| Shadcn UI | Drizzle ORM | | Replit AI |
+
 ## Demo
 ![PromptStudio Demo](demo.png)
 
